@@ -384,6 +384,13 @@ int UFileMput::ParseInitResult(const std::string &data) {
     UFILE_SET_ERROR(ERR_CPPSDK_PARSE_JSON);
     return ERR_CPPSDK_PARSE_JSON;
   }
+
+  ret = JsonGetSizet(data, SETID_KEY, m_setid);
+  if (ret) {
+    UFILE_SET_ERROR(ERR_CPPSDK_PARSE_JSON);
+    return ERR_CPPSDK_PARSE_JSON;
+  }
+
   return 0;
 }
 

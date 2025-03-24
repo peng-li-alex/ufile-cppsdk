@@ -13,6 +13,7 @@ namespace api {
 
 #define UPLOADID_KEY ("UploadId")
 #define BLKSIZE_KEY ("BlkSize")
+#define SETID_KEY ("SetId")
 #define PART_NUMBER_KEY ("PartNumber")
 #define FILESIZE_KEY ("FileSize")
 
@@ -99,6 +100,10 @@ public:
    * @brief: 分片上传的块大小
    */
   inline size_t BlkSize() { return m_blksize; }
+  /*
+   * @brief: 分片上传的setid
+   */
+  inline size_t SetId() { return m_setid; }
 
 private:
   int ParseInitResult(const std::string &data);
@@ -112,6 +117,7 @@ private:
 
 private:
   size_t m_blksize;
+  size_t m_setid;
   size_t m_blk_idx;
   size_t m_finished_fsize;
   size_t m_uploaded_size;
