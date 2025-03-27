@@ -18,6 +18,7 @@ struct ListResultEntry {
   std::string storage_class; // 文件存储类型
   uint64_t last_modified;    //文件最后修改时间
   uint64_t create_time;      // 文件创建时间
+  uint64_t set_id;           // 文件set_id
 };
 
 typedef std::list<ListResultEntry> ListResult;

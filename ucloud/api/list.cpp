@@ -270,6 +270,13 @@ int UFileList::ParseRsp(const char *body, ListResult *result,
       }
       entry.create_time = value;
 
+      ret = JsonGetInt64(content, "SetId", value);
+      if (ret) {
+        json_object_put(root);
+        return ret;
+      }
+      entry.set_id = value;
+
       if (result) {
         result->push_back(entry);
       }

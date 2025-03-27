@@ -17,6 +17,7 @@ struct FileInfo {
   std::string last_modified; // 上次修改时间
   std::string create_time;   // 创建时间
   std::string storage_class; // 存储类型
+  uint64_t set_id;           // 文件set_id
 };
 
 class UFileHeadfile : public APIBase {
