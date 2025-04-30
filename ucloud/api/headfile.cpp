@@ -107,8 +107,8 @@ int UFileHeadfile::ParseRsp(const char *header, FileInfo *result) {
   if (headers.find("X-Ufile-Storage-Class") != headers.end()) {
     result->storage_class = headers["X-Ufile-Storage-Class"];
   }
-  if (headers.find("X-Ufile-SetId") != headers.end()) {
-    result->set_id = std::stoul(headers["X-Ufile-SetId"]);
+  if (headers.find("X-Ufile-Setid") != headers.end()) {
+    result->set_id = std::stoul(headers["X-Ufile-Setid"]);
   }
   return 0;
 }
