@@ -28,7 +28,7 @@ UFilePut::UFilePut() : APIBase() {}
 UFilePut::~UFilePut() {}
 
 int UFilePut::Put(const std::string &bucket, const std::string &key,
-                  std::istream &is) {
+                  std::istream &is, PutResult *result) {
 
   int64_t ret = InitGlobalConfig();
   if (ret)
@@ -65,12 +65,14 @@ int UFilePut::Put(const std::string &bucket, const std::string &key,
   m_http->AddHeader("Authorization", digestor.Token(signature));
 
   //设置数据源
-  std::ostringstream oss;
+  std::ostringstream oss, hss;
   UCloudOStream data_stream(&oss);
+  UCloudOStream header_stream(&hss);
   UCloudHTTPReadParam rp =
       {f : NULL, is : is, fsize : fsize, need_total_n : fsize};
   UCloudHTTPWriteParam wp = {f : NULL, os : &data_stream};
-  ret = m_http->RoundTrip(&rp, &wp, NULL);
+  UCloudHTTPHeaderParam hp = {f : NULL, os : &header_stream};
+  ret = m_http->RoundTrip(&rp, &wp, &hp);
   if (ret) {
     UFILE_SET_ERROR2(ERR_CPPSDK_SEND_HTTP, UFILE_LAST_ERRMSG());
     return ERR_CPPSDK_SEND_HTTP;
@@ -92,12 +94,14 @@ int UFilePut::Put(const std::string &bucket, const std::string &key,
       return ERR_CPPSDK_CLIENT_INTERNAL;
     }
     UFILE_SET_ERROR2(ret, errmsg);
+  } else {
+    ret = ParseRsp(hss.str().c_str(), result);
   }
   return ret;
 }
 
 int UFilePut::Put(const std::string &bucket, const std::string &key,
-                  const char *ptr, const size_t size) {
+                  const char *ptr, const size_t size, PutResult *result) {
 
   if (!ptr || size == 0) {
     UFILE_SET_ERROR(ERR_CPPSDK_INVALID_PARAM);
@@ -119,7 +123,7 @@ int UFilePut::Put(const std::string &bucket, const std::string &key,
     return ERR_CPPSDK_FILE_READ;
   }
 
-  ret = this->Put(bucket, key, iss);
+  ret = this->Put(bucket, key, iss, result);
   return ret;
 }
 
@@ -147,6 +151,19 @@ int UFilePut::PutFile(const std::string &bucket, const std::string &key,
   ret = this->Put(bucket, key, ifs);
   ifs.close();
   return ret;
+}
+
+int UFilePut::ParseRsp(const char *header, PutResult *result) {
+  std::map<std::string, std::string> headers;
+  int ret = ucloud::cppsdk::http::ParseHeadersFromString(header, headers);
+  if (ret) {
+    UFILE_SET_ERROR(ERR_CPPSDK_PARSE_JSON);
+    return ERR_CPPSDK_PARSE_JSON;
+  }
+  if (headers.find("X-Ufile-Setid") != headers.end()) {
+    result->set_id = std::stoul(headers["X-Ufile-Setid"]);
+  }
+  return 0;
 }
 
 } // namespace api
