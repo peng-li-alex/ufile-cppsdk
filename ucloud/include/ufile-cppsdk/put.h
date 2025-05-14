@@ -44,10 +44,11 @@ public:
    * @bucket: 目标Bucket名称
    * @key: 保存在Bucket上的文件对象名称
    * @is: 输入流
+   * @result: 要保存返回结果的PutResult对象的地址
    * @return: 0=成功，非0=失败
    */
   int PutFile(const std::string &bucket, const std::string &key,
-              const std::string &filepath);
+              const std::string &filepath, PutResult *result);
 
 private:
   int ParseRsp(const char *header, PutResult *result);

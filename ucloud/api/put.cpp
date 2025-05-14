@@ -128,7 +128,7 @@ int UFilePut::Put(const std::string &bucket, const std::string &key,
 }
 
 int UFilePut::PutFile(const std::string &bucket, const std::string &key,
-                      const std::string &filepath) {
+                      const std::string &filepath, PutResult *result) {
 
   int64_t ret = InitGlobalConfig();
   if (ret)
@@ -148,7 +148,7 @@ int UFilePut::PutFile(const std::string &bucket, const std::string &key,
 
   m_filename = filepath;
 
-  ret = this->Put(bucket, key, ifs);
+  ret = this->Put(bucket, key, ifs, result);
   ifs.close();
   return ret;
 }
